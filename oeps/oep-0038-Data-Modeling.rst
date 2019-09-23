@@ -278,7 +278,7 @@ Have sane default values
 
 - For example if you are adding a boolean to flag that a learner has not yet activated their account, the default value should be set to False, not None.
 
-The database layer should preserving uniqueness
+The database layer should preserve uniqueness
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - If a model needs to preserve uniqueness between many fields use :code:`unique_together`_.
