@@ -258,7 +258,8 @@ Use the correct data type for a column
 -  Don’t store an Integer field as :code:`CharField`_..
 .. _CharField: https://docs.djangoproject.com/en/2.2/ref/models/fields/#charfield
 
-- Store UUID's as :code:`CharField`_. with a max lenght that matches the max length of the UUID.
+- Store UUID's as :code:`UUIDField`_. with a max length that matches the max length of the UUID.
+.. _UUIDField: https://docs.djangoproject.com/en/2.2/ref/models/fields/#uuidfield
 
 
 Each column in a table should only store a single fact or dimension
