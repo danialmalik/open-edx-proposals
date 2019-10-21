@@ -282,6 +282,7 @@ Have sane default values
 
 - :code:`CharField`_. Should be defined with the :code:`null=True`_. option.
 .. _null=True: https://docs.djangoproject.com/en/2.2/ref/models/fields/#null
+   - This is to improve post processing. Defaulting :code:`CharField`_. to null enables use to better derive the intent of the user. If the field is null no intent was made to enter that field. If the field is an empty string eitehr an empty string was entered of the field was modified later by the user.
 
 - For example if you are adding a boolean to flag that a learner has not yet activated their account, the default value should be set to False, not None.
 
