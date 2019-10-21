@@ -280,6 +280,9 @@ Have sane default values
 
 - A model should have default values that make sense for the application
 
+- :code:`CharField`_. Should be defined with the :code:`null=True`_. option.
+.. _null=True: https://docs.djangoproject.com/en/2.2/ref/models/fields/#null
+
 - For example if you are adding a boolean to flag that a learner has not yet activated their account, the default value should be set to False, not None.
 
 The database layer should preserve uniqueness
