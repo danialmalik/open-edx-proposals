@@ -51,7 +51,7 @@ the collection, integration, analysis, and presentation of business
 information. The purpose of Business Intelligence is to support better
 business decision making.
 
-**Composite Key** - in the context of relational databases, a composite key
+**Composite Key** - In the context of relational databases, a composite key
 is a combination of two or more columns in a table that can be used to
 uniquely identify each row in the table. Uniqueness is only guaranteed
 when the columns are combined; when taken individually, the columns do
@@ -147,7 +147,7 @@ needing much clarifying documentation.
 Consider the analytics user
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For every hour of engineer-time spent creating a data model. Many
+For every hour of engineer-time spent creating a data model, many
 more are spent using the model and analyzing its data. Taking
 the time to consider how the data will be used, and thoughtfully design
 a data representation, can potentially save many hours during the
@@ -190,12 +190,12 @@ Data Modeling Standards
 
 The standards below are designed to ensure edX can gain the highest value and insights from the data.
 The application of these standards is the most basic level of support to which all applications in the Open edX ecosystem
-should adhere. When creating new applications or models please ensure the models being created comform to the following.
+should adhere. When creating new applications or models please ensure the models being created conform to the following.
 
 Use a numeric primary key
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  It is recommended to use use :code:`BigAutoField`_.
+-  It is recommended to use :code:`BigAutoField`_.
 .. _BigAutoField: https://docs.djangoproject.com/en/2.2/ref/models/fields/#bigautofield
 
 -  Do not use composite based primary keys. Use a primary key column.
@@ -246,7 +246,7 @@ History for models involved with enrollments, courses and course metadata, or da
 
    -  Date & time of the change
 
-   -  The foreign key of of the user who initiated the change
+   -  The foreign key of the user who initiated the change
 
 Use the correct data type for a column
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -282,7 +282,7 @@ Have sane default values
 
 - :code:`CharField`_. Should be defined with the :code:`null=True`_. option.
 .. _null=True: https://docs.djangoproject.com/en/2.2/ref/models/fields/#null
-   - This is to improve post processing. Defaulting :code:`CharField`_. to null enables use to better derive the intent of the user. If the field is null no intent was made to enter that field. If the field is an empty string eitehr an empty string was entered of the field was modified later by the user.
+   - This is to improve post processing. Defaulting :code:`CharField`_. to null enables us to better derive the intent of the user. If the field is null no intent was made to enter that field. If the field is blank a string was entered and was modified later by the user.
 
 - For example if you are adding a boolean to flag that a learner has not yet activated their account, the default value should be set to False, not None.
 
@@ -331,7 +331,7 @@ Don’t trap the data
 - Another example is a concatenated string with a separator. It is best to treat these data items in 2 distinct fields.
 
 -  Don’t store encoded (pickle, json, other) objects in the database! If
-      you need to run the python environment to decode the data, analyists who use SQL will have a difficult time querying and decoding this data.
+      you need to run the python environment to decode the data, analysts who use SQL will have a difficult time querying and decoding this data.
 
 Store everything
 ~~~~~~~~~~~~~~~~
@@ -399,20 +399,12 @@ the Data Modeling Standards section of this document are met.
 Responsibility for Third-party Service Integrations
 ===================================================
 
-Not sure… Adhere to the same standards.
+Adhere to the same standards.
 
 Backward Compatibility
 ======================
 
-Data models that are not within the standards of this document should be
-updated the next time a team needs to make changes to that model
-
-Some things are exempt from this process:
-
--  Do not update primary key types without business/technical
-      justification, as there may be many downstream changes that will
-      need to change as well.
-
+Data models that are not within the standards of this document do not need to be updated to adhere to OEP-38 standards.
 
 
 
