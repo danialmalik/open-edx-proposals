@@ -118,17 +118,18 @@ example:
 
   {
     "id": "b3b3981e-7544-11ea-b663-acde48001122",
-    "source": "https://discovery.edx.org/events"
+    "source": "https://discovery.edx.org/events/"
     "specversion": "1.0",
-    "time": "2020-02-23T09:00:00Z",
     "type": "org.openedx.catalog.course.created.v1"
+    "time": "2020-02-23T09:43:18Z",
+    "minorversion": 0,
     "data": {
         // message specific payload here
     }
   }
 
-Fields
-======
+CloudEvents Fields
+==================
 
 All top level field names are specified by the CloudEvents spec, but most fields
 defined by that standard have some leeway in how they're used for any given
@@ -137,18 +138,8 @@ description of the conventions Open edX will use for that field. All Open edX
 events should have all of the fields specified below (even if some are
 considered optional in the CloudEvents spec).
 
-`dataschema <https://github.com/cloudevents/spec/blob/master/spec.md#dataschema>`_
-----------------------------------------------------------------------------------
-
-Example: ???
-
-WIP: This would link to documentation? Fill this out after we flesh out that
-portion of this OEP.
-
-
 `id <https://github.com/cloudevents/spec/blob/master/spec.md#id>`_
 ------------------------------------------------------------------
-
 Example: ``"b3b3981e-7544-11ea-b663-acde48001122"``
 
 Message ID. CloudEvents requires this to be a string that is unique for any
@@ -159,15 +150,21 @@ string using Python's default behavior: lowercase and and dash-separated.
 
 `source <https://github.com/cloudevents/spec/blob/master/spec.md#source-1>`_
 -----------------------------------------------------------------------------
-
-Example: ``"https://courses.edx.org/events"``
+Example: ``"https://discovery.edx.org/events/"``
 
 This is an absolute URI that represents the URL of the server emitting the
-event. It does not have
+event. The specific URL path may give some useful information about the events
+being emitted. Groups of servers (e.g. behind a load balancer) should choose the
+same URI, and not have an individual one per server. URIs should be intelligible
+to humans, and not something machine generated like AWS machine names.
+
+Message clients should *not* interpret this value and make switching logic based
+on where a message is coming from. The service producing the event should be
+free to change this URI at any time.
+
 
 `specversion <https://github.com/cloudevents/spec/blob/master/spec.md#specversion>`_
 ------------------------------------------------------------------------------------
-
 Always: ``"1.0"``
 
 Mandatory field that refers to the version of CloudEvents. We have to use "1.0"
@@ -175,7 +172,6 @@ to be spec-compliant.
 
 `type <https://github.com/cloudevents/spec/blob/master/spec.md#type>`_
 ----------------------------------------------------------------------
-
 Example: ``"org.openedx.catalog.course.created.v1"``
 
 This is the name of our event. CloudEvents only requires that this be a string
@@ -184,14 +180,8 @@ reverse-DNS name for namespacing purposes. We will use a period-separated
 hierarchical name comprising with the format ``{Reverse DNS}-{Architecture
 Domain}-{Subject}-{Action}-{Major Version}``.
 
-``version``
------------
-
-
-
 Reverse DNS
 ~~~~~~~~~~~
-
 Example: ``org.openedx``
 
 In this example, ``org.openedx`` is the generic prefix that would be used for
@@ -201,7 +191,6 @@ might interact with internal IT or finance reporting systems, should use
 
 Domain (from Domain Driven Design)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Example: ``catalog``
 
 The next part of the ``type`` hierarchy is the Domain. Examples of this are:
@@ -209,6 +198,7 @@ The next part of the ``type`` hierarchy is the Domain. Examples of this are:
 * catalog
 * content_authoring
 * credentials
+* ecommerce
 * learning
 
 It is the expectation that there are relatively few domains, and that they will
@@ -217,7 +207,6 @@ underscores if they are more than one word.
 
 Subject
 ~~~~~~~
-
 Example: ``course``
 
 The name of an entity that the event applies to. Examples might be ``course``,
@@ -240,7 +229,6 @@ more complex due date information in ``learning``.
 
 Action
 ~~~~~~
-
 Example: ``created``
 
 This is the action that occurred for the event. Some of most common ones will be
@@ -258,7 +246,6 @@ consistent, but we tend towards past tense).
 
 Major Version
 ~~~~~~~~~~~~~
-
 Example: ``v1``
 
 The last portion is the major version of the message, starting with ``v1``. All
@@ -270,30 +257,14 @@ compatibility.)
 
 `datacontenttype <https://github.com/cloudevents/spec/blob/master/spec.md#datacontenttype>`_
 --------------------------------------------------------------------------------------------
-
 Example: ``"application/json"``
 
 `RFC 2046 <https://tools.ietf.org/html/rfc2046>`_ string value describing the
 format of ``data`` attribute. It should be ``application/json`` the vast
 majority of the time, but some events might have ``text/xml``.
 
-
-``minorversion``
-----------------
-
-Example: ``2``
-
-This is the one extension attribute we would be introducing to CloudEvents and
-represents a minor version in semver reckoning, meaning that it increments when
-we have made backwards compatible additions to the message payload in the
-``data`` attribute. Values can only be integers. The initial value for
-``minorversion`` should be ``0``. There is no corresponding ``majorversion``
-because that information is encoded into the message type.
-
-
 `time <https://github.com/cloudevents/spec/blob/master/spec.md#time>`_
 ----------------------------------------------------------------------
-
 Example: ``"2020-02-23T09:00:00Z"``
 
 Timestamp that the event occurred, in UTC using `RFC 3339
@@ -307,6 +278,31 @@ corresponding database changes. If you are sending out multiple event messages
 describing the same occurance (e.g. a version 1 and version 2 of an event), they
 should have the *exact* same timestamp.
 
+Extension Fields
+================
+
+CloudEvents allows for extension fields to be declared, so long as they do not
+conflict with existing fields. We are adding a couple that will be required
+across all Open edX generated events
+
+pii
+---
+Example: ``false``
+
+Boolean field to indicate whether this message contains any personally
+identifiable information. It is the responsiblity of the receiver to examine
+this field and any documentation to understand what specific fields are PII and
+how they need to be stored and tracked for possible later deletion.
+
+minorversion
+------------
+Example: ``2``
+
+This is a minor version in semver reckoning, meaning that it increments when
+we have made backwards compatible additions to the message payload in the
+``data`` attribute. Values can only be integers. The initial value for
+``minorversion`` should be ``0``. There is no corresponding ``majorversion``
+because that information is encoded into the message type.
 
 
 Message Content Data Guidelines
@@ -337,15 +333,30 @@ same event type.
 Events are Created by the Owning Domain
 ---------------------------------------
 
+Teams at edX are broadly aligned to domains and roughly mapped to services.
+Services should not emit events for other domains. For instance, the ecommerce
+service is its own domain and should not be emitting ``catalog`` or ``learning``
+events.
 
+Encoding Opaque Keys
+--------------------
 
+The opaque-keys library is used by many parts of Open edX to identify pieces of
+content. Whenever these things are passed in messages, use the convention of
+ending the variable name with "_key", so ``course_key`` instead of ``course_id``
+and ``usage_key`` instead of ``usage_id``.
 
+Keep Messages Self-Contained and Avoid Callbacks
+------------------------------------------------
 
-Avoid Callbacks
----------------
+Whenever possible, messages should be self-contained and not force the receiver
+to either keep a full history of the entity or to hit a callback for more
+information. For instance, if the event relates to an update to the record, it
+is reasonable to include the entire record, and not just the one field that
+changed. This has to be weighed against size restrictions of the message.
 
-A callback is when you create a message with an ID or URL that you expect the
-consumer to make a synchronous call to when it receives the message. This is
+A callback is when you create a message containing an ID or URL that you expect
+the consumer to make a synchronous call to when it receives the message. This is
 commonly used when an event represents some change that is too large to
 practically fit into the 64K message. For instance, we currently emit a generic
 ``course_published`` Django signal whenever data is published in Studio, leading
@@ -366,7 +377,8 @@ Things change when we introduce a callback to this same scenario. Say the
 analytics events now include a callback URL to get basic user information. In
 this scenario, doubling the consumers that your service has now also doubles the
 load that your service is placing on the REST endpoint serving this user
-information. Is that safe to do?
+information. There's no way for you as a service owner to know for sure if
+that's safe, and doing so may lead to cascading failures in other systems.
 
 One thing to consider is whether we can emit multiple events that better target
 specific consumer use cases. Let's take the ``course_published`` event as an
@@ -384,136 +396,91 @@ location of their new profile picture. Just keep in mind that messages may be
 read long after they're generated, and any presigned S3 URLs you generate might
 be expired by the time a consumer gets them.
 
+Transport Layer
+===============
 
-Architectural Goals
-===================
+Events will be sent and received using Kombu, the messaging library that celery
+uses. We will use Redis as the backing server. This allow us to implement this
+messaging scheme without adding any new server dependencies.
 
-Asynchronous messaging is often promoted as a way to decouple services from each
-other and make them more resilient to failure. What does that mean for Open edX
-in concrete terms? How does this OEP align with the Achitecture Manifesto?
+Concept Mapping
+---------------
 
-Autonomy beats Coordination -> Control over domain messaging, individually versioned messages.
+Todo: Need to actually code up a proof-of-concept (base off the experimental
+course-discovery PR?) to test that this works properly...
 
-Extensions/Plugins -> Encouraging further decoupling by elminating even code dependencies
+Every domain will map to a Kombu Topic Exchange, and services will be Producers
+that send messages to those Exchanges. The Exchange name and message Routing Key
+will be derived from the event ``type``. The parts of the ``type`` up to and
+including the Domain will be the name of the exchange. The rest of the ``type``,
+starting from the Subject will be the Routing Key. So the
+``org.openedx.catalog.course.created.v1`` event would go to the
+``org.openedx.catalog`` Exchange, and use ``course.created.v1`` for the Routing
+Key.
 
-Data Redundancy beats Coupling Acorss Contexts
+It is then possible for consumers to declare a Queue with multiple bindings that
+subscribe to various families of events coming from potentially multiple
+exchanges::
 
-Loosely Coupled Codebase (versioning, repeating yourself, separate classes for minor version
-updates, mixed together?)
+    from kombu import Exchange, Queue, binding
 
-Asynchronous Messaging beats Synchronous Requests
+    catalog_exchange = Exchange('org.openedx.catalog', type='topic')
+    ecommerce_exchange = Exchange('org.openedx.ecommerce', type='topic')
 
-Eliminate Expensive, Batch Synchronization
-------------------------------------------
+    queue = Queue(
+        bindings=[
+            binding(catalog_exchange, routing_key='program.*'),
+            binding(catalog_exchange, routing_key='course.*'),
+            binding(ecommerce_exchange, routing_key='*.purchased.*'),
+        ]
+    )
 
-We currently have processes that make extremely expensive requests across
-services to synchronize data, particularly from course-discovery. Aside from
-being wasteful (relatively few entries actually change between these batches),
-it is also difficult to properly scale for. Most auto-scaling is built to
-trigger once particular thresholds around CPU are hit, and does not deal well
-with momentary bursts of load that are 5-10X normal levels. We are forced into
-some combination of over-provisioning and/or accepting periodic spikes in
-overall service latency. In a situation where we are already running near
-capacity, a spike like this might be enough to trigger a cascade of failures.
+Todo: Contrast with Kafka.
 
-Eliminate Blocking, Synchronous Requests
-----------------------------------------
+.. warning::
+    Everything below this area are still in scratch-notes form. So please don't
+    review.
 
+Code Practices
+==============
 
+Defining Message Classes
+------------------------
 
+When to Emit Messages
+---------------------
+(Transactions, on_commit, etc.)
+
+Handling Versions
+-----------------
+
+Bootstrapping
+-------------
+Equivalent of simulate_publish?
+
+Testing
+-------
+
+Documentation
+-------------
+AsyncAPI?
+
+Management/Introspection
+------------------------
+
+Logging
+-------
+
+Architectural Implications
+==========================
+
+Improve Data Replication and Resiliency
+---------------------------------------
 
 Reduce the need for Plugins
 ---------------------------
 
-`Django app plugins <https://github.com/edx/edx-platform/tree/master/openedx/core/djangoapps/plugins>`_
-exist to help decouple core edx-platform code from third party extensions. But
-in some cases, the only reason the plugin needs to exist at all is because there
-is no other way to get notifications for important lifecycle events like user
-registration, course enrollment, score changes, etc. Having a stable set of
-event APIs will allow many of these to exist as independently deployed services
-that don't need to be run in the same process as the LMS.
-
-
-
-Simplify Integration to External Systems
-----------------------------------------
-
-( Remove direct dependencies between parts of the system. )
-
-
-
-
-
-
-* easier to substitute other systems
-* don't have to add as much to edx-platform itself.
-
-
-
-Scratch Notes
-=============
-
-(Just jotting down ideas here:)
-
-Ordering considerations? Race conditions?
-
-Getting a catalog snapshot of all events major + minor version at any given time
-(like for a named release)
-
-Testing strategies to improve backwards compatibility.
-
-Library/code POC?
-
-exchange mapping
-
-Granularity of events (e.g. not just a course published, but what changed, use
-cases, schedule data, etc.)
-
-1. Self-contained, without history
-2. PII
-Only one producer per event.
-
-4. No RPC
-5. Exchange = Domain, routing key = event type. Namespacing excessive?
-6. Shouldn't emit before data is committed to the database. on_commit practice?
-   (both to prevent mismatch on error as well as to make sure something else
-   that might have to read can actually do so without race).
-
-Transport Layer
-
-Kombu, Redis as default.
-
-Versioning
-
-Major/minor versioning.
-Envelope in data attribute, including minor version info.
-
-Testing and Ensuring Compatibility
-
-Bootstrapping
-
-Documentation
-
-(AsyncAPI)
-
-Security
-
-Top level concerns:
-
-Rationale
-
-
-Backward Compatibility
-
-
-
-Reference Implementation
-
-
-
-Rejected Alternatives
-
-
-
-Change History
+Simplify Integration with Other Systems
+---------------------------------------
+(Richie, third party analytics, etc.)
 
