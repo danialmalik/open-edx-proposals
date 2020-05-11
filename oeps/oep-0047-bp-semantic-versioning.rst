@@ -13,15 +13,15 @@ OEP-47: Semantic Versioning
    * - Authors
      - Robert Raposa <rraposa@edx.org>
    * - Arbiter
-     - ???
+     - Régis Behmo <regis@behmo.com>
    * - Status
-     - Draft
+     - Under Review
    * - Type
      - Best Practice
    * - Created
      - 2020-03-19
    * - Review Period
-     - ???
+     - 2020-05-11 - 2020-05-25
 
 .. contents::
    :local:
