@@ -40,7 +40,11 @@ The most relevant part from the summary of the `Semantic Versioning v2`_ specifi
     * *MINOR* version when you *add functionality in a backwards compatible manner*, and
     * *PATCH* version when you make *backwards compatible bug fixes*.
 
-Some additional tips are called out in `Backward Incompatible Changes`_ and `Tooling and Automation`_.
+Some additional tips are called out in:
+
+* `Backward Incompatible Changes`_
+* `Tooling and Automation`_
+* `Versions for Forks`_
 
 .. note::
 
@@ -81,6 +85,13 @@ Tooling and Automation
 * Other tools can be added here over time.
 
 .. _semantic-release: https://github.com/semantic-release/semantic-release
+
+Versions for Forks
+==================
+
+We sometimes maintain forks of open source libraries. In these cases, the version should follow the `recommendation of the Python community`_, which is to add a `+edx.1` suffix to the end of the public version number.
+
+.. _recommendation of the Python community: https://www.python.org/dev/peps/pep-0440/#local-version-identifiers
 
 References
 ==========
