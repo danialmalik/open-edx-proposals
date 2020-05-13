@@ -58,20 +58,20 @@ Many or all of the Open edX installable libraries already use versions similar t
 Backward Incompatible Changes
 =============================
 
-Why do incompatible changes need special attention?
---------------------------------------------------
+Special attention should be given to incompatible changes, because:
 
-* Communicating incompatibilities is important because it alerts humans to possible problems when attempting to upgrade your package.
-* A MAJOR version is used to communicate any "Backward Incompatible Changes" (also known as "Breaking Changes").
-* If you think a breaking change is unlikely to affect anyone, increment the MAJOR version anyway, and simply note that fact in the changelog entry.
+* Communicating incompatibilities alerts humans to possible problems when attempting to upgrade your package.
+* A MAJOR version is what is used to communicate any "Backward Incompatible Changes" (also known as "Breaking Changes").
 
-What if I find an incompatible change after it is released as a MINOR or PATCH version?
----------------------------------------------------------------------------------------
+See related FAQ questions from `Semantic Versioning v2`_:
 
-If you later find a backward incompatible change in a MINOR or PATCH version after publishing the package, please update the changelog and communicate the inconsistency. Additionally, you could do one of the following:
+* `If even the tiniest backwards incompatible changes to the public API require a major version bump, won’t I end up at version 42.0.0 very rapidly?`_
+* `What do I do if I accidentally release a backwards incompatible change as a minor version?`_
+* `What if I inadvertently alter the public API in a way that is not compliant with the version number change (i.e. the code incorrectly introduces a major breaking change in a patch release)?`_
 
-* A new MINOR or PATCH version could be released to revert the change, and the change can then be restored with a new MAJOR version. Or,
-* If you decide that reverting will cause more harm for some reason, and you do not intend to revert, please let this be a part of your communication.
+.. _If even the tiniest backwards incompatible changes to the public API require a major version bump, won’t I end up at version 42.0.0 very rapidly?: https://semver.org/#if-even-the-tiniest-backwards-incompatible-changes-to-the-public-api-require-a-major-version-bump-wont-i-end-up-at-version-4200-very-rapidly
+.. _What do I do if I accidentally release a backwards incompatible change as a minor version?: https://semver.org/#what-do-i-do-if-i-accidentally-release-a-backwards-incompatible-change-as-a-minor-version
+.. _What if I inadvertently alter the public API in a way that is not compliant with the version number change (i.e. the code incorrectly introduces a major breaking change in a patch release)?:
 
 
 Tooling and Automation
